@@ -1,0 +1,9 @@
+# Non-secret dlt configuration. Safe to commit.
+
+[runtime]
+log_level = "INFO"
+
+# Keep ClickHouse table names readable: <dataset>_<table> instead of the
+# default <dataset>___<table>.
+[destination.clickhouse]
+dataset_table_separator = "_"

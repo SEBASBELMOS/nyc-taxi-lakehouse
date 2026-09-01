@@ -1,0 +1,15 @@
+# Ingestion / load framework. Extras pull in what each destination needs:
+#   filesystem -> s3fs   (MinIO as source and as destination)
+#   az         -> adlfs  (Azure ADLS destination)
+#   clickhouse -> clickhouse-connect + clickhouse-driver
+#   parquet    -> pyarrow writer
+dlt[filesystem,az,clickhouse,parquet]==1.30.0
+
+# Iceberg table format + Nessie REST catalog client.
+pyiceberg[pyarrow,s3fs]==0.11.1
+
+# Explicit: the assignment requires reading Parquet with pyarrow.
+pyarrow>=18,<26
+
+requests>=2.32,<3
+pandas>=2.2,<3

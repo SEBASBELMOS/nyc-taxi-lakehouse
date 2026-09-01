@@ -1,0 +1,16 @@
+# Secrets - never commit
+.env
+dlt/secrets.toml
+
+# dlt pipeline state and local artifacts
+state/
+*.duckdb
+dlt/.anonymous_id
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
