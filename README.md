@@ -183,19 +183,6 @@ docker compose exec clickhouse clickhouse-client --password clickhouse123 \
   --query "SELECT count(*) FROM default.nyc_taxi_yellow_tripdata_2025_01"
 ```
 
-## Guion del video (< 15 min)
-
-| Tiempo | Contenido |
-|---|---|
-| 00:00–01:00 | Arquitectura y roles de cada componente |
-| 01:00–02:30 | `docker compose ps` + consolas de MinIO y Nessie |
-| 02:30–04:30 | Script 01 → bucket RAW en MinIO |
-| 04:30–07:30 | Script 02 → tabla Iceberg + namespace en Nessie |
-| 07:30–09:30 | Script 03 → archivo en Azure |
-| 09:30–12:30 | Script 04 → carga y `count(*)` |
-| 12:30–14:00 | `verificar.py` + tablas de metadatos |
-| 14:00–15:00 | Cierre |
-
 ## Problemas frecuentes
 
 **`Invalid pattern: '**' can only be an entire path component`**

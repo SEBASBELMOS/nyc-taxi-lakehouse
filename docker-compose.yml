@@ -155,6 +155,10 @@ services:
       - ./notebooks:/home/jovyan/notebooks
       - ./evidencias:/home/jovyan/evidencias
       - ./dlt:/home/jovyan/.dlt
+      # dlt secrets are mounted explicitly as a specific volume at compose time.
+      # They are never baked into the image; every notebook resolves them from
+      # /home/jovyan/.dlt/secrets.toml at runtime.
+      - ./dlt/secrets.toml:/home/jovyan/.dlt/secrets.toml:ro
       - jupyter-state:/home/jovyan/state
     networks: [datastack]
 

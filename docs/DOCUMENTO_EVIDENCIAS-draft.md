@@ -1,7 +1,7 @@
 # Documento de Evidencias — Proyecto Corte 1
 
 **Materia:** Frameworks y Herramientas para Big Data
-**Integrantes:** [Nombres de los integrantes]
+**Integrantes:** NICOLAS SANTIAGO CUARAN SOTELO, SEBASTIAN BELALCAZAR MOSQUERA, BRYAN FERNANDO BURBANO CARVAJAL, MICHEL DAHIANA BURGOS SANTOS, JUAN DAVID DAZA RIVERA
 **Grupo:** [Número de grupo — pendiente de asignación]
 **Fecha:** 01/09/2026
 
@@ -92,25 +92,14 @@ Rows landed in MinIO: 3,475,226
 [OK] Iceberg row count matches - 3,475,226 (expected 3,475,226)
 ```
 
-### 4.3. Script 03 — Iceberg → Azure ADLS ⚠️
+### 4.3. Script 03 — Iceberg → Azure ADLS ✅
 
 - Lectura: los data files se resuelven preguntando al catálogo de Nessie.
-- Destino: `abfss://clase-4-dlt@fhbd.dfs.core.windows.net/GRUPO_2`
-- **Estado: BLOQUEADO por Azure.** La cuenta de almacenamiento `fhbd`
-  responde `ErrorCode: AccountIsDisabled`. La credencial es válida (una key
-  inválida devolvería `AuthenticationFailed`); el error es del lado del
-  servicio, no del pipeline:
-
-```
-<Error>
-  <Code>AccountIsDisabled</Code>
-  <Message>The specified account is disabled.</Message>
-</Error>
-```
-
-- **Acción requerida:** el profesor suministrará nuevos secrets de Azure
-  (cuenta/key). Cuando estén disponibles, se actualiza `dlt/secrets.toml` y el
-  script se ejecuta sin cambios.
+- Destino: `abfss://clase-4-dlt@fhbd.dfs.core.windows.net/GRUPO_2/nyc_taxi/`
+- **Estado: COMPLETADO.** Se re-ejecutó el notebook 03 con la key corregida
+  (88 caracteres, la del enunciado) y la cuenta `fhbd` re-habilitada por el
+  profesor. Subió a `abfss://clase-4-dlt@fhbd.dfs.core.windows.net/GRUPO_2/nyc_taxi/`
+  (data files Parquet ~73 MB + metadata de dlt), confirmado por verificación adlfs.
 
 ### 4.4. Script 04 — Iceberg → ClickHouse
 
@@ -126,8 +115,8 @@ Rows landed in MinIO: 3,475,226
 
 ## 5. Verificación integral (`verificar.py`)
 
-Reporte de evidencias en una sola corrida: **11/12 checks pasados**. El único
-check fallido es el de alcance de Azure (cuenta deshabilitada, ver §4.3).
+Reporte de evidencias en una sola corrida: **12/12 checks pasados**, incluyendo
+el check de Azure («files present in Azure - 5 file(s)»).
 
 ```
 [OK ] bucket 'nyc-taxi-raw' exists
@@ -141,7 +130,7 @@ check fallido es el de alcance de Azure (cuenta deshabilitada, ver §4.3).
 [OK ] table 'nyc_taxi_yellow_tripdata_2025_01' exists
 [OK ] dlt metadata tables present
 [OK ] ClickHouse row count matches - 3,475,226 (expected 3,475,226)
-[FAIL] Azure reachable - The specified account is disabled. (AccountIsDisabled)
+[OK ] files present in Azure - 5 file(s)
 ```
 
 ## 6. Evidencias visuales
@@ -157,7 +146,8 @@ Capturas almacenadas en la carpeta `evidencias/` del proyecto:
 | 4 | `04_nessie_namespace.png` | Namespace `nyc_taxi` y tabla en Nessie |
 | 5 | `05_clickhouse_count.png` | `SELECT count(*)` = 3475226 |
 | 6 | `06_clickhouse_metadata.png` | `SHOW TABLES` con tablas de metadatos de dlt |
-| 7 | `07_azure_file.png` | **Pendiente** — requiere cuenta Azure habilitada |
+| 7 | `07_azure_file.png` | ✅ Capturada — notebook `verificar_azure.ipynb`: listado adlfs del container `clase-4-dlt` mostrando `GRUPO_2/nyc_taxi` |
+| 8 | `08_verificar_12de12.png` | ✅ Capturada — notebook `verificar.ipynb` con 12/12 checks pasados |
 
 ## 7. Incidentes y soluciones
 
@@ -168,6 +158,8 @@ Capturas almacenadas en la carpeta `evidencias/` del proyecto:
 | dlt rechazaba `secrets.toml` (`Empty key at line 1 col 0`) | El archivo se generó en UTF-8 con BOM (PowerShell 5.1); el parser TOML no acepta BOM | Regenerar el archivo en UTF-8 sin BOM |
 | `docker compose up` fallaba con `logon session does not exist` | El CLI de Docker en sesión SSH no accede al credential store de la sesión interactiva de Windows | Ejecutar el `up` como tarea programada en la sesión interactiva del usuario |
 | Consola de MinIO: modal de licencia y navegación | UI nueva (`/browser/<bucket>`); el modal AGPL intercepta el primer clic | Aceptar el modal y navegar por clic en las filas |
+| Key de Azure con 115 caracteres en `secrets.toml` | El generador de `secrets.toml` concatenó texto sobrante a la key (una key Azure válida mide 88 chars) | Regenerar `secrets.toml` desde la plantilla con la key del enunciado, verificando longitud y hash |
+| Azure respondía `AccountIsDisabled` (cuenta `fhbd` deshabilitada) | La cuenta de almacenamiento del curso estaba deshabilitada del lado del servicio | RESUELTO: el profesor re-habilitó la cuenta `fhbd`; la key del enunciado quedó verificada por hash (SHA256) y el notebook 03 completó la ingesta |
 
 ## 8. Estado y pendientes
 
@@ -176,8 +168,10 @@ Capturas almacenadas en la carpeta `evidencias/` del proyecto:
 | Stack Docker (4 servicios) | ✅ Operativo |
 | Scripts 01, 02, 04 | ✅ Ejecutados y verificados |
 | Validación de 3.475.226 filas | ✅ Exacta en RAW, Iceberg y ClickHouse |
-| Script 03 (Azure ADLS) | ⚠️ Pendiente: el profesor entregará nuevos secrets de Azure |
-| Evidencia 07 (Azure) | ⚠️ Pendiente del punto anterior |
+| Script 03 (Azure ADLS) | ✅ Completado: ingesta a `GRUPO_2/nyc_taxi` verificada con adlfs |
+| Evidencia 07 (Azure) | ✅ Capturada (`07_azure_file.png`) |
+| Video | No aplica (exposición en vivo en clase) |
+| Notebooks 01-04 + verificar_azure + verificar en Jupyter | ✅ Ejecutados completos |
 | Número de grupo | ✅ Grupo 2 (`GRUPO_2`) |
 
 ## 9. Conclusiones
@@ -185,6 +179,7 @@ Capturas almacenadas en la carpeta `evidencias/` del proyecto:
 El stack cumple el objetivo extremo a extremo para las capas locales: el dato
 público se ingiere con `dlt`, se persiste como Parquet en MinIO, se promueve a
 tabla Iceberg con catálogo Nessie y se carga a ClickHouse con la validación
-crítica de **3.475.226 filas exactas**. La única pieza pendiente (Azure ADLS)
-depende de una acción externa: la habilitación de la cuenta de almacenamiento
-del curso.
+crítica de **3.475.226 filas exactas**. El flujo queda completo de punta a punta:
+la última capa (Azure ADLS) se cargó con éxito una vez re-habilitada la cuenta
+`fhbd` y configurada la key del enunciado, y la verificación integral cierra en
+12/12 checks, incluida la confirmación de archivos presentes en Azure.
