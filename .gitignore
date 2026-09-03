@@ -17,3 +17,6 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# PDFs del enunciado del curso (contienen credenciales)
+docs/*.pdf
