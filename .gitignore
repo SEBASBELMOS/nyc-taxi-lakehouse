@@ -14,3 +14,6 @@ dlt/.anonymous_id
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+
+# macOS
+.DS_Store
