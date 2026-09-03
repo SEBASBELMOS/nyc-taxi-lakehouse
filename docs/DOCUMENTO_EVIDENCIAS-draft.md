@@ -51,8 +51,8 @@ Iceberg (vía Nessie) y ClickHouse.
 - **Secretos:** las credenciales de Azure, MinIO y ClickHouse viven en
   `dlt/secrets.toml` (excluido de control de versiones). Ningún script contiene
   credenciales hardcodeadas.
-- **Entorno:** `.env` con los parámetros no secretos. `GROUP_FOLDER=proyecto`
-  (valor neutro; se actualizará cuando el profesor asigne número de grupo).
+- **Entorno:** `.env` con los parámetros no secretos. `GROUP_FOLDER=GRUPO_2`
+  (grupo 2 confirmado).
 - **Decisiones técnicas relevantes:**
   - Nessie se usa como catálogo Iceberg REST (`/iceberg`), no como tipo de
     catálogo `nessie` (no existe en PyIceberg).
@@ -95,7 +95,7 @@ Rows landed in MinIO: 3,475,226
 ### 4.3. Script 03 — Iceberg → Azure ADLS ⚠️
 
 - Lectura: los data files se resuelven preguntando al catálogo de Nessie.
-- Destino: `abfss://clase-4-dlt@fhbd.dfs.core.windows.net/proyecto`
+- Destino: `abfss://clase-4-dlt@fhbd.dfs.core.windows.net/GRUPO_2`
 - **Estado: BLOQUEADO por Azure.** La cuenta de almacenamiento `fhbd`
   responde `ErrorCode: AccountIsDisabled`. La credencial es válida (una key
   inválida devolvería `AuthenticationFailed`); el error es del lado del
@@ -108,8 +108,9 @@ Rows landed in MinIO: 3,475,226
 </Error>
 ```
 
-- **Acción requerida:** re-habilitar la cuenta `fhbd` o suministrar una nueva
-  cuenta/key. El script se ejecutará sin cambios cuando Azure esté disponible.
+- **Acción requerida:** el profesor suministrará nuevos secrets de Azure
+  (cuenta/key). Cuando estén disponibles, se actualiza `dlt/secrets.toml` y el
+  script se ejecuta sin cambios.
 
 ### 4.4. Script 04 — Iceberg → ClickHouse
 
@@ -175,9 +176,9 @@ Capturas almacenadas en la carpeta `evidencias/` del proyecto:
 | Stack Docker (4 servicios) | ✅ Operativo |
 | Scripts 01, 02, 04 | ✅ Ejecutados y verificados |
 | Validación de 3.475.226 filas | ✅ Exacta en RAW, Iceberg y ClickHouse |
-| Script 03 (Azure ADLS) | ⚠️ Bloqueado: cuenta `fhbd` deshabilitada |
+| Script 03 (Azure ADLS) | ⚠️ Pendiente: el profesor entregará nuevos secrets de Azure |
 | Evidencia 07 (Azure) | ⚠️ Pendiente del punto anterior |
-| Número de grupo | ⚠️ Pendiente de asignación (se usó `proyecto`) |
+| Número de grupo | ✅ Grupo 2 (`GRUPO_2`) |
 
 ## 9. Conclusiones
 
