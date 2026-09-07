@@ -22,8 +22,8 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-password123}
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # Web console
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web console
     volumes:
       - minio-data:/data
     healthcheck:
@@ -60,11 +60,26 @@ services:
   # Version store is ROCKSDB (NOT the IN_MEMORY default) so the namespace and
   # table survive a container restart - otherwise the catalog is empty every
   # time the stack comes back up.
+  nessie-data-init:
+    image: alpine:latest
+    container_name: corte1-nessie-data-init
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /nessie/data
+        chown -R 10000:10001 /nessie/data
+    volumes:
+      - nessie-data:/nessie/data
+    restart: "no"
+    networks: [datastack]
   nessie:
     image: ghcr.io/projectnessie/nessie:0.108.4
     container_name: corte1-nessie
     depends_on:
       minio-init:
+        condition: service_completed_successfully
+      nessie-data-init:
         condition: service_completed_successfully
     environment:
       nessie.version.store.type: ROCKSDB
@@ -95,8 +110,8 @@ services:
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse123}
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
     ports:
-      - "8123:8123"   # HTTP interface
-      - "9002:9000"   # Native TCP. NOT 9000 on the host: MinIO owns that port.
+      - "8123:8123" # HTTP interface
+      - "9002:9000" # Native TCP. NOT 9000 on the host: MinIO owns that port.
     volumes:
       - clickhouse-data:/var/lib/clickhouse
     ulimits:
