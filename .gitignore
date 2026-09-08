@@ -21,4 +21,4 @@ __pycache__/
 # PDFs del enunciado del curso (contienen credenciales)
 docs/*.pdf
 # ...excepto el documento de evidencias, que es un entregable del proyecto
-!docs/DOCUMENTO_EVIDENCIAS.pdf
+!docs/Proyecto_Corte_1.pdf
