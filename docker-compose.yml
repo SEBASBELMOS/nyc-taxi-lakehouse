@@ -56,6 +56,28 @@ services:
     restart: "no"
     networks: [datastack]
 
+  # Hands the named volumes over to the users the services actually run as.
+  #
+  # Docker creates a named volume as root:root whenever the mount path does not
+  # exist in the image. Neither image declares its data directory, so without
+  # this step Nessie (uid 10000) cannot create /nessie/data/LOG and exits, and
+  # Jupyter (uid 1000) cannot write its dlt pipeline state.
+  volume-init:
+    image: alpine:3.22
+    container_name: corte1-volume-init
+    user: "0:0"
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - >-
+        chown -R 10000:10001 /volumes/nessie &&
+        chown -R 1000:100 /volumes/jupyter &&
+        echo "volume ownership set: nessie=10000:10001 jupyter=1000:100"
+    volumes:
+      - nessie-data:/volumes/nessie
+      - jupyter-state:/volumes/jupyter
+    restart: "no"
+
   # Nessie exposes an Iceberg REST catalog at http://nessie:19120/iceberg
   # Version store is ROCKSDB (NOT the IN_MEMORY default) so the namespace and
   # table survive a container restart - otherwise the catalog is empty every
@@ -65,6 +87,8 @@ services:
     container_name: corte1-nessie
     depends_on:
       minio-init:
+        condition: service_completed_successfully
+      volume-init:
         condition: service_completed_successfully
     environment:
       nessie.version.store.type: ROCKSDB
@@ -122,6 +146,8 @@ services:
       minio:
         condition: service_healthy
       minio-init:
+        condition: service_completed_successfully
+      volume-init:
         condition: service_completed_successfully
       clickhouse:
         condition: service_healthy

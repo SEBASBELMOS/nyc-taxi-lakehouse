@@ -214,7 +214,7 @@ en el bucket Iceberg: vaciarlo y correr 02 de nuevo.
 ## Estructura
 
 ```
-Proyecto-Corte-1/
+Proyecto-Corte-1-GRUPO_2/
 ├── docker-compose.yml          # los 4 servicios
 ├── Dockerfile                  # imagen de Jupyter con las dependencias
 ├── requirements.txt
